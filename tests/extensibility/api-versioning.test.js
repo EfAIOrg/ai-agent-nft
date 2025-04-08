@@ -13,9 +13,12 @@ describe('Extensibility Tests - API Versioning', () => {
         }
       });
       
-      expect(response.status).toBe(200);
-      expect(response.data).toHaveProperty('version');
-      expect(response.data.version).toContain(config.extensibility.apiVersionSupport);
+      const responseData = response.data;
+      const responseStatus = response.status;
+      
+      expect(responseStatus).toBe(200);
+      expect(responseData).toHaveProperty('version');
+      expect(responseData.version).toContain(config.extensibility.apiVersionSupport);
     } catch (error) {
       const response = await axios.post(`${config.apiUrl}/tasks`, 
         { description: 'Simple test task' },
@@ -27,8 +30,11 @@ describe('Extensibility Tests - API Versioning', () => {
         }
       );
       
-      expect(response.status).toBe(200);
-      expect(response).toHaveProperty('data');
+      const responseData = response.data;
+      const responseStatus = response.status;
+      
+      expect(responseStatus).toBe(200);
+      expect(responseData).toBeDefined();
     }
   });
   
@@ -49,8 +55,11 @@ describe('Extensibility Tests - API Versioning', () => {
         }
       });
       
-      if (response.status === 200) {
-        expect(response.data).toHaveProperty('extensions');
+      const responseData = response.data;
+      const responseStatus = response.status;
+      
+      if (responseStatus === 200) {
+        expect(responseData).toHaveProperty('extensions');
       }
     } catch (error) {
       console.log('Extensions endpoint not available or not accessible');
@@ -63,10 +72,13 @@ describe('Extensibility Tests - API Versioning', () => {
         }
       });
       
-      if (response.status === 200) {
-        const docsContainExtensions = response.data.includes('extension') || 
-                                     response.data.includes('plugin') ||
-                                     response.data.includes('custom');
+      const responseData = response.data;
+      const responseStatus = response.status;
+      
+      if (responseStatus === 200) {
+        const docsContainExtensions = responseData.includes('extension') || 
+                                     responseData.includes('plugin') ||
+                                     responseData.includes('custom');
         
         console.log(`API documentation ${docsContainExtensions ? 'mentions' : 'does not mention'} extensions`);
       }
