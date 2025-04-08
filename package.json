@@ -1,0 +1,44 @@
+{
+  "name": "devin-ai-nft",
+  "version": "1.0.0",
+  "description": "Non-functional test suite for Devin.ai AI Agent",
+  "main": "index.js",
+  "scripts": {
+    "test:performance": "jest --testPathPattern=tests/performance",
+    "test:reliability": "jest --testPathPattern=tests/reliability",
+    "test:security": "jest --testPathPattern=tests/security",
+    "test:scalability": "jest --testPathPattern=tests/scalability",
+    "test:usability": "jest --testPathPattern=tests/usability",
+    "test:all": "jest",
+    "report": "node scripts/generate-report.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EfAIOrg/ai-agent-nft.git"
+  },
+  "keywords": [
+    "ai",
+    "testing",
+    "non-functional",
+    "performance",
+    "security"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/EfAIOrg/ai-agent-nft/issues"
+  },
+  "homepage": "https://github.com/EfAIOrg/ai-agent-nft#readme",
+  "dependencies": {
+    "axios": "^1.6.0",
+    "dotenv": "^16.3.1",
+    "k6": "^0.0.0",
+    "lighthouse": "^11.0.0"
+  },
+  "devDependencies": {
+    "jest": "^29.5.0",
+    "jest-html-reporter": "^3.10.1",
+    "owasp-zap-api": "^0.7.0",
+    "autocannon": "^7.12.0"
+  }
+}
