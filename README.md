@@ -158,7 +158,7 @@ jobs:
       - name: Run tests
         run: npm run test:all
         env:
-          DEVIN_API_URL: ${{ secrets.DEVIN_API_URL }}
+          DEVIN_API_URL: ${{ vars.DEVIN_API_URL }}
           DEVIN_AUTH_TOKEN: ${{ secrets.DEVIN_AUTH_TOKEN }}
 ```
 
