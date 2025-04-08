@@ -39,6 +39,7 @@ describe('Recovery Tests - Error Handling', () => {
     const taskId = response.taskId;
     
     const initialStatus = await apiClient.getTaskStatus(taskId);
+    const initialStatusValue = initialStatus.status;
     
     const concurrentRequests = [];
     for (let i = 0; i < 5; i++) {
@@ -48,8 +49,9 @@ describe('Recovery Tests - Error Handling', () => {
     await Promise.all(concurrentRequests);
     
     const finalStatus = await apiClient.getTaskStatus(taskId);
+    const finalStatusValue = finalStatus.status;
     
-    expect(finalStatus.status).toBe(initialStatus.status);
+    expect(finalStatusValue).toBe(initialStatusValue);
     
     await apiClient.cancelTask(taskId);
   });

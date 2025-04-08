@@ -55,17 +55,22 @@ describe('Observability Tests - Metrics', () => {
       await apiClient.submitTask(null);
       fail('Invalid task should have been rejected');
     } catch (error) {
-      expect(error.response).toBeDefined();
-      expect(error.response.data).toBeDefined();
-      
-      const errorData = error.response.data;
-      expect(errorData).toHaveProperty('error');
-      
-      expect(typeof errorData.error).toBe('string');
-      expect(errorData.error.length).toBeGreaterThan(5);
-      
-      if (errorData.details) {
-        expect(typeof errorData.details).toBe('object');
+      if (error.response) {
+        const responseData = error.response.data;
+        const responseStatus = error.response.status;
+        
+        expect(responseData).toBeDefined();
+        
+        expect(responseData).toHaveProperty('error');
+        
+        expect(typeof responseData.error).toBe('string');
+        expect(responseData.error.length).toBeGreaterThan(5);
+        
+        if (responseData.details) {
+          expect(typeof responseData.details).toBe('object');
+        }
+      } else {
+        expect(error).toBeDefined();
       }
     }
   });

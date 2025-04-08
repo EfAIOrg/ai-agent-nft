@@ -1,4 +1,5 @@
 const DevinApiClient = require('../../utils/api-client');
+const axios = require('axios');
 const config = require('../../config/config');
 
 describe('Manageability Tests - Admin API', () => {
@@ -32,10 +33,13 @@ describe('Manageability Tests - Admin API', () => {
       
       const response = await adminClient.get('/config');
       
-      expect(response.status).toBe(200);
-      expect(response.data).toBeDefined();
+      const responseData = response.data;
+      const responseStatus = response.status;
       
-      expect(Object.keys(response.data).length).toBeGreaterThan(0);
+      expect(responseStatus).toBe(200);
+      expect(responseData).toBeDefined();
+      
+      expect(Object.keys(responseData).length).toBeGreaterThan(0);
       
     } catch (error) {
       console.log('Configuration endpoint not available or not accessible');
@@ -46,18 +50,22 @@ describe('Manageability Tests - Admin API', () => {
     try {
       const response = await axios.get(`${config.apiUrl}/health`);
       
-      expect(response.status).toBe(200);
-      expect(response.data).toBeDefined();
+      const responseData = response.data;
+      const responseStatus = response.status;
       
-      expect(response.data.status).toBeDefined();
-      expect(['healthy', 'ok', 'up', 'running']).toContain(response.data.status.toLowerCase());
+      expect(responseStatus).toBe(200);
+      expect(responseData).toBeDefined();
+      
+      expect(responseData.status).toBeDefined();
+      expect(['healthy', 'ok', 'up', 'running']).toContain(responseData.status.toLowerCase());
       
     } catch (error) {
       console.log('Health check endpoint not available or not accessible');
       
       try {
         const response = await axios.get(`${config.apiUrl}/`);
-        expect(response.status).toBe(200);
+        const responseStatus = response.status;
+        expect(responseStatus).toBe(200);
       } catch (innerError) {
         fail('No health check endpoint available');
       }
