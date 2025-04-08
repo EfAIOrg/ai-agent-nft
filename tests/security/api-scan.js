@@ -1,4 +1,4 @@
-const ZapClient = require('owasp-zap-api');
+const { ZapClient } = require('zaproxy');
 const config = require('../../config/config');
 
 
