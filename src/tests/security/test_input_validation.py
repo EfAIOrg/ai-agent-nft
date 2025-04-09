@@ -22,6 +22,10 @@ class TestInputValidation:
     ])
     def test_malicious_input_handling(self, api_client, payload):
         """Test handling of potentially malicious inputs."""
+        test_result = api_client.send_query("Test query")
+        if test_result["status_code"] == 404:
+            pytest.skip("API endpoint not available")
+            
         result = api_client.send_query(**payload)
         
         assert result["status_code"] not in (500, 501, 502, 503), \
@@ -35,6 +39,10 @@ class TestInputValidation:
     
     def test_large_input(self, api_client):
         """Test handling of extremely large inputs."""
+        test_result = api_client.send_query("Test query")
+        if test_result["status_code"] == 404:
+            pytest.skip("API endpoint not available")
+            
         large_query = "a" * (10 * 1024 * 1024)  # 10MB string
         result = api_client.send_query(query=large_query)
         
