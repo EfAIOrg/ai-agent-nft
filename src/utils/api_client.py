@@ -39,8 +39,8 @@ class DevinClient:
         start_time = time.time()
         try:
             response = self.session.post(
-                f"{self.base_url}/query",
-                json={"query": query, **kwargs},
+                f"{self.base_url}/v1/sessions",
+                json={"prompt": query, **kwargs},
                 timeout=self.timeout
             )
             response.raise_for_status()
