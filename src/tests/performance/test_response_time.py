@@ -6,11 +6,11 @@ from src.config.config import CONFIG
 RESPONSE_TIME_THRESHOLD = CONFIG["performance"]["response_time_threshold_ms"] / 1000  # convert to seconds
 
 @pytest.fixture
-def api_client():
+def api_client(api_url, api_key):
     """Create API client fixture."""
     return DevinClient(
-        base_url=pytest.config.getoption("--api-url"),
-        api_key=pytest.config.getoption("--api-key")
+        base_url=api_url,
+        api_key=api_key
     )
 
 class TestResponseTime:

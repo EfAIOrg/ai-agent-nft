@@ -28,12 +28,36 @@ def pytest_addoption(parser):
         help="Path to log file or log endpoint"
     )
 
+@pytest.fixture
+def api_url(request):
+    """Get API URL from command line or environment."""
+    return request.config.getoption("--api-url")
+
+@pytest.fixture
+def api_key(request):
+    """Get API key from command line or environment."""
+    return request.config.getoption("--api-key")
+
+@pytest.fixture
+def report_path(request):
+    """Get report path from command line."""
+    return request.config.getoption("--report-path")
+
+@pytest.fixture
+def log_path(request):
+    """Get log path from command line or environment."""
+    return request.config.getoption("--log-path")
+
 @pytest.fixture(scope="session", autouse=True)
 def setup_logging(request):
     """Set up logging for tests."""
     import logging
+    
+    reports_dir = request.config.getoption("--report-path")
+    os.makedirs(reports_dir, exist_ok=True)
+    
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-        filename=f"{request.config.getoption('--report-path')}/test_run.log"
+        filename=f"{reports_dir}/test_run.log"
     )

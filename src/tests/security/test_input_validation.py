@@ -3,11 +3,11 @@ import pytest
 from src.utils.api_client import DevinClient
 
 @pytest.fixture
-def api_client():
+def api_client(api_url, api_key):
     """Create API client fixture."""
     return DevinClient(
-        base_url=pytest.config.getoption("--api-url"),
-        api_key=pytest.config.getoption("--api-key")
+        base_url=api_url,
+        api_key=api_key
     )
 
 class TestInputValidation:

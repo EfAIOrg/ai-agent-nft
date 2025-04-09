@@ -8,19 +8,18 @@ from src.utils.api_client import DevinClient
 from src.config.config import CONFIG
 
 @pytest.fixture
-def api_client():
+def api_client(api_url, api_key):
     """Create API client fixture."""
     return DevinClient(
-        base_url=pytest.config.getoption("--api-url"),
-        api_key=pytest.config.getoption("--api-key")
+        base_url=api_url,
+        api_key=api_key
     )
 
 class TestLogging:
     """Test cases for logging and observability."""
     
-    def test_log_format(self):
+    def test_log_format(self, log_path, api_key):
         """Test log format includes required fields."""
-        log_path = pytest.config.getoption("--log-path", None)
         if not log_path:
             pytest.skip("Log path not provided")
             
@@ -28,7 +27,7 @@ class TestLogging:
             if log_path.startswith("http"):
                 response = requests.get(
                     log_path,
-                    headers={"Authorization": f"Bearer {pytest.config.getoption('--api-key')}"}
+                    headers={"Authorization": f"Bearer {api_key}"}
                 )
                 response.raise_for_status()
                 log_entries = response.json()
