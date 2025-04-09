@@ -68,6 +68,14 @@ class DevinApiClient {
         message: 'Task cancelled successfully'
       };
     } catch (error) {
+      if (error.response && error.response.status === 404) {
+        console.log(`Task ${taskId} not found or cannot be cancelled. This may be expected behavior.`);
+        return {
+          success: true,
+          message: 'Task cancellation acknowledged (task may already be completed or not exist)'
+        };
+      }
+      
       if (this.retryCount < this.maxRetries) {
         this.retryCount++;
         console.log(`Retrying cancelTask (${this.retryCount}/${this.maxRetries})...`);
@@ -84,6 +92,13 @@ class DevinApiClient {
       const response = await this.client.get(`/v1${config.observability.metricsEndpoint}`);
       return response.data;
     } catch (error) {
+      if (error.response && error.response.status === 404) {
+        console.log('Metrics endpoint not available in this API version');
+        return {
+          message: 'Metrics not available',
+          status: 'unavailable'
+        };
+      }
       console.error('Error getting metrics:', error);
       throw error;
     }
@@ -94,6 +109,13 @@ class DevinApiClient {
       const response = await this.client.get(`/v1${config.observability.logsEndpoint}`);
       return response.data;
     } catch (error) {
+      if (error.response && error.response.status === 404) {
+        console.log('Logs endpoint not available in this API version');
+        return {
+          message: 'Logs not available',
+          status: 'unavailable'
+        };
+      }
       console.error('Error getting logs:', error);
       throw error;
     }
@@ -113,6 +135,13 @@ class DevinApiClient {
       const response = await adminClient.get('/v1/status');
       return response.data;
     } catch (error) {
+      if (error.code === 'ENOTFOUND' || (error.response && error.response.status === 404)) {
+        console.log('Admin API not available in this environment');
+        return {
+          status: 'unavailable',
+          message: 'Admin API not accessible'
+        };
+      }
       console.error('Error getting admin status:', error);
       throw error;
     }

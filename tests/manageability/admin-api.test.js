@@ -1,6 +1,7 @@
 const DevinApiClient = require('../../utils/api-client');
 const axios = require('axios');
 const config = require('../../config/config');
+const { fail } = require('@jest/globals');
 
 describe('Manageability Tests - Admin API', () => {
   const apiClient = new DevinApiClient();
