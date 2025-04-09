@@ -1,6 +1,7 @@
 const DevinApiClient = require('../../utils/api-client');
 const axios = require('axios');
 const config = require('../../config/config');
+const { fail } = require('@jest/globals');
 
 describe('Manageability Tests - Admin API', () => {
   const apiClient = new DevinApiClient();
@@ -67,7 +68,7 @@ describe('Manageability Tests - Admin API', () => {
         const responseStatus = response.status;
         expect(responseStatus).toBe(200);
       } catch (innerError) {
-        fail('No health check endpoint available');
+        expect(true).toBe(false, 'No health check endpoint available');
       }
     }
   });

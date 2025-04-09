@@ -30,7 +30,8 @@ const TASK_DESCRIPTIONS = [
 export default function () {
   const randomTaskIndex = Math.floor(Math.random() * TASK_DESCRIPTIONS.length);
   const payload = JSON.stringify({
-    description: TASK_DESCRIPTIONS[randomTaskIndex]
+    prompt: TASK_DESCRIPTIONS[randomTaskIndex],
+    snapshot_id: "snapshot-9918e79f495949009348fd97b0ff5091"
   });
 
   const params = {
@@ -40,11 +41,11 @@ export default function () {
     },
   };
 
-  const response = http.post(`${API_URL}/tasks`, payload, params);
+  const response = http.post(`${API_URL}/v1/sessions`, payload, params);
   
   const success = check(response, {
     'status is 200 or 201': (r) => r.status === 200 || r.status === 201,
-    'response has taskId': (r) => r.json('taskId') !== undefined,
+    'response has session_id': (r) => r.json('session_id') !== undefined,
   });
 
   if (!success) {
