@@ -11,96 +11,85 @@ class DevinApiClient {
       },
       timeout: config.testTimeout
     });
+    
+    this.adminClient = axios.create({
+      baseURL: config.manageability.adminApiUrl,
+      headers: {
+        'Authorization': `Bearer ${authToken}`,
+        'Content-Type': 'application/json'
+      },
+      timeout: config.testTimeout
+    });
+    
     this.retryCount = 0;
     this.maxRetries = config.recovery.maxRetries;
     this.retryDelay = config.recovery.retryDelayMs;
   }
 
-  async submitTask(taskDescription) {
+  /**
+   * Execute an API request with retry logic
+   * @param {Function} apiCall - Function that returns a promise for the API call
+   * @param {string} operationName - Name of the operation for logging
+   * @returns {Promise<any>} - Response data from the API
+   */
+  async executeWithRetry(apiCall, operationName) {
     try {
-      const response = await this.client.post('/tasks', { description: taskDescription });
+      const response = await apiCall();
+      this.resetRetryCount(); // Reset retry count on success
       return response.data;
     } catch (error) {
       if (this.retryCount < this.maxRetries) {
         this.retryCount++;
-        console.log(`Retrying submitTask (${this.retryCount}/${this.maxRetries})...`);
+        console.log(`Retrying ${operationName} (${this.retryCount}/${this.maxRetries})...`);
         await new Promise(resolve => setTimeout(resolve, this.retryDelay));
-        return this.submitTask(taskDescription);
+        return this.executeWithRetry(apiCall, operationName);
       }
-      console.error('Error submitting task:', error);
+      console.error(`Error in ${operationName}:`, error);
+      this.resetRetryCount(); // Reset retry count after max retries
       throw error;
     }
+  }
+
+  async submitTask(taskDescription) {
+    return this.executeWithRetry(
+      () => this.client.post('/tasks', { description: taskDescription }),
+      'submitTask'
+    );
   }
 
   async getTaskStatus(taskId) {
-    try {
-      const response = await this.client.get(`/tasks/${taskId}`);
-      return response.data;
-    } catch (error) {
-      if (this.retryCount < this.maxRetries) {
-        this.retryCount++;
-        console.log(`Retrying getTaskStatus (${this.retryCount}/${this.maxRetries})...`);
-        await new Promise(resolve => setTimeout(resolve, this.retryDelay));
-        return this.getTaskStatus(taskId);
-      }
-      console.error('Error getting task status:', error);
-      throw error;
-    }
+    return this.executeWithRetry(
+      () => this.client.get(`/tasks/${taskId}`),
+      'getTaskStatus'
+    );
   }
 
   async cancelTask(taskId) {
-    try {
-      const response = await this.client.delete(`/tasks/${taskId}`);
-      return response.data;
-    } catch (error) {
-      if (this.retryCount < this.maxRetries) {
-        this.retryCount++;
-        console.log(`Retrying cancelTask (${this.retryCount}/${this.maxRetries})...`);
-        await new Promise(resolve => setTimeout(resolve, this.retryDelay));
-        return this.cancelTask(taskId);
-      }
-      console.error('Error canceling task:', error);
-      throw error;
-    }
+    return this.executeWithRetry(
+      () => this.client.delete(`/tasks/${taskId}`),
+      'cancelTask'
+    );
   }
 
   async getMetrics() {
-    try {
-      const response = await this.client.get(config.observability.metricsEndpoint);
-      return response.data;
-    } catch (error) {
-      console.error('Error getting metrics:', error);
-      throw error;
-    }
+    return this.executeWithRetry(
+      () => this.client.get(config.observability.metricsEndpoint),
+      'getMetrics'
+    );
   }
 
   async getLogs() {
-    try {
-      const response = await this.client.get(config.observability.logsEndpoint);
-      return response.data;
-    } catch (error) {
-      console.error('Error getting logs:', error);
-      throw error;
-    }
+    return this.executeWithRetry(
+      () => this.client.get(config.observability.logsEndpoint),
+      'getLogs'
+    );
   }
 
   async getAdminStatus() {
-    try {
-      const adminClient = axios.create({
-        baseURL: config.manageability.adminApiUrl,
-        headers: {
-          'Authorization': `Bearer ${config.authToken}`,
-          'Content-Type': 'application/json'
-        },
-        timeout: config.testTimeout
-      });
-      
-      const response = await adminClient.get('/status');
-      return response.data;
-    } catch (error) {
-      console.error('Error getting admin status:', error);
-      throw error;
-    }
+    return this.executeWithRetry(
+      () => this.adminClient.get('/status'),
+      'getAdminStatus'
+    );
   }
 
   resetRetryCount() {
