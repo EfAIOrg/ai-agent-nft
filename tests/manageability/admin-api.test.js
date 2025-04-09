@@ -68,7 +68,7 @@ describe('Manageability Tests - Admin API', () => {
         const responseStatus = response.status;
         expect(responseStatus).toBe(200);
       } catch (innerError) {
-        fail('No health check endpoint available');
+        expect(true).toBe(false, 'No health check endpoint available');
       }
     }
   });
