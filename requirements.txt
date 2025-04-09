@@ -11,12 +11,12 @@ pytest-benchmark==4.0.0
 # Security testing
 bandit==1.7.5
 safety==2.3.5
-owasp-zap-api-python==0.4.0
+# owasp-zap-api-python==0.4.0  # Commented out due to availability issues
 
 # Maintainability testing
 pylint==2.17.5
 flake8==6.1.0
-radon==6.0.1
+radon==5.1.0  # Modified version to be compatible with xenon
 xenon==0.9.0
 
 # Extensibility testing
