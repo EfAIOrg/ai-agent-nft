@@ -39,8 +39,8 @@ class DevinClient:
         start_time = time.time()
         try:
             response = self.session.post(
-                f"{self.base_url}/query",
-                json={"query": query, **kwargs},
+                f"{self.base_url}/v1/sessions",
+                json={"prompt": query, **kwargs},
                 timeout=self.timeout
             )
             response.raise_for_status()
@@ -51,8 +51,20 @@ class DevinClient:
             }
         except requests.exceptions.RequestException as e:
             logger.error(f"API request failed: {str(e)}")
+            error_msg = str(e)
+            status_code = getattr(e.response, "status_code", 500) if hasattr(e, "response") else 500
+            
+            if hasattr(e, "response") and e.response.status_code == 429:
+                try:
+                    error_data = e.response.json()
+                    if "detail" in error_data and "quota exceeded" in error_data["detail"].lower():
+                        logger.warning("API quota exceeded")
+                        error_msg = "API quota exceeded"
+                except Exception:
+                    pass
+                
             return {
-                "status_code": getattr(e.response, "status_code", 500) if hasattr(e, "response") else 500,
+                "status_code": status_code,
                 "response_time": time.time() - start_time,
-                "error": str(e),
+                "error": error_msg,
             }
