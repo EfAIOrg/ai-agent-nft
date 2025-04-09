@@ -4,12 +4,12 @@
   "description": "Non-functional test suite for Devin.ai AI Agent",
   "main": "index.js",
   "scripts": {
-    "test:performance": "jest --testPathPattern=tests/performance",
-    "test:reliability": "jest --testPathPattern=tests/reliability",
-    "test:security": "jest --testPathPattern=tests/security",
-    "test:scalability": "jest --testPathPattern=tests/scalability",
-    "test:usability": "jest --testPathPattern=tests/usability",
-    "test:all": "jest",
+    "test:performance": "jest --setupFiles=./setup.js --testPathPattern=tests/performance",
+    "test:reliability": "jest --setupFiles=./setup.js --testPathPattern=tests/reliability",
+    "test:security": "jest --setupFiles=./setup.js --testPathPattern=tests/security",
+    "test:scalability": "jest --setupFiles=./setup.js --testPathPattern=tests/scalability",
+    "test:usability": "jest --setupFiles=./setup.js --testPathPattern=tests/usability",
+    "test:all": "jest --setupFiles=./setup.js",
     "report": "node scripts/generate-report.js"
   },
   "repository": {
