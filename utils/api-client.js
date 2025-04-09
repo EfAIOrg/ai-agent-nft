@@ -18,8 +18,15 @@ class DevinApiClient {
 
   async submitTask(taskDescription) {
     try {
-      const response = await this.client.post('/tasks', { description: taskDescription });
-      return response.data;
+      const response = await this.client.post('/v1/sessions', {
+        prompt: taskDescription,
+        snapshot_id: "snapshot-9918e79f495949009348fd97b0ff5091" // Default snapshot ID, can be made configurable
+      });
+      
+      return {
+        taskId: response.data.session_id,
+        url: response.data.url
+      };
     } catch (error) {
       if (this.retryCount < this.maxRetries) {
         this.retryCount++;
@@ -34,8 +41,12 @@ class DevinApiClient {
 
   async getTaskStatus(taskId) {
     try {
-      const response = await this.client.get(`/tasks/${taskId}`);
-      return response.data;
+      const response = await this.client.get(`/v1/sessions/${taskId}`);
+      
+      return {
+        status: response.data.status || 'in_progress',
+        result: response.data.result || {}
+      };
     } catch (error) {
       if (this.retryCount < this.maxRetries) {
         this.retryCount++;
@@ -50,8 +61,12 @@ class DevinApiClient {
 
   async cancelTask(taskId) {
     try {
-      const response = await this.client.delete(`/tasks/${taskId}`);
-      return response.data;
+      const response = await this.client.delete(`/v1/sessions/${taskId}`);
+      
+      return {
+        success: true,
+        message: 'Task cancelled successfully'
+      };
     } catch (error) {
       if (this.retryCount < this.maxRetries) {
         this.retryCount++;
@@ -66,7 +81,7 @@ class DevinApiClient {
 
   async getMetrics() {
     try {
-      const response = await this.client.get(config.observability.metricsEndpoint);
+      const response = await this.client.get(`/v1${config.observability.metricsEndpoint}`);
       return response.data;
     } catch (error) {
       console.error('Error getting metrics:', error);
@@ -76,7 +91,7 @@ class DevinApiClient {
 
   async getLogs() {
     try {
-      const response = await this.client.get(config.observability.logsEndpoint);
+      const response = await this.client.get(`/v1${config.observability.logsEndpoint}`);
       return response.data;
     } catch (error) {
       console.error('Error getting logs:', error);
@@ -95,7 +110,7 @@ class DevinApiClient {
         timeout: config.testTimeout
       });
       
-      const response = await adminClient.get('/status');
+      const response = await adminClient.get('/v1/status');
       return response.data;
     } catch (error) {
       console.error('Error getting admin status:', error);
