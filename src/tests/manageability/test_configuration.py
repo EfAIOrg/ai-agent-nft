@@ -8,11 +8,11 @@ from src.utils.api_client import DevinClient
 from src.config.config import CONFIG
 
 @pytest.fixture
-def api_client():
+def api_client(request):
     """Create API client fixture."""
     return DevinClient(
-        base_url=pytest.config.getoption("--api-url"),
-        api_key=pytest.config.getoption("--api-key")
+        base_url=request.config.getoption("--api-url"),
+        api_key=request.config.getoption("--api-key")
     )
 
 class TestConfigurationManagement:
